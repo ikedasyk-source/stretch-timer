@@ -95,9 +95,20 @@
     .complete-box button{width:100%;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--hold),#0097a7);color:white;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.22em}
 
     @media(max-height:760px){.logo{font-size:42px;margin:2px 0 10px}.guide-image{height:128px}.summary-card input{font-size:26px}.start-btn{height:56px}.sound{padding:10px}.content{padding-top:14px}}
+
+    /* ── Splash ── */
+    #splash{position:fixed;inset:0;z-index:9999;background:#07111f;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:opacity .8s ease}
+    #splash.hide{opacity:0}
+    .splash-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,14vw,72px);letter-spacing:.25em;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 24px rgba(0,217,183,.4));animation:splashUp .6s cubic-bezier(.22,.61,.36,1) both}
+    @keyframes splashUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── App fade-in ── */
+    .phone-shell{opacity:0;transition:opacity .8s ease}
+    .phone-shell.show{opacity:1}
   </style>
 </head>
 <body>
+<div id="splash"><div class="splash-logo">STRETCH</div></div>
 <div class="phone-shell">
   <main class="app">
     <div class="content">
@@ -361,6 +372,19 @@ function updateRunView(){
   if(state.running)$('pauseBtn').className='run-btn active-'+phaseClass;
   $('toast').classList.toggle('show',state.remaining<=3&&state.remaining>0);
 }
+
+// ── Splash ──
+window.addEventListener('load', () => {
+  const splash = document.getElementById('splash');
+  const shell  = document.querySelector('.phone-shell');
+  // ロゴ表示0.6s + 静止1.8s = 2.4s後にフェードアウト開始
+  // 同時にホーム画面フェードイン（0.8s）
+  setTimeout(() => {
+    splash.classList.add('hide');
+    shell.classList.add('show');
+    setTimeout(() => splash.remove(), 800);
+  }, 2400);
+});
 
 updateSettingsView();
 </script>
