@@ -5,169 +5,122 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#07111f" />
   <title>STRETCH TIMER APP</title>
-  <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="STRETCH" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --hold:#00d9b7;
-      --relax:#79b8ff;
-      --done:#a29bfe;
-      --danger:#ff7675;
-      --text:#f5f7fb;
-      --muted:rgba(245,247,251,.52);
-      --line:rgba(255,255,255,.10);
-      --surface:rgba(255,255,255,.055);
-      --surface2:rgba(255,255,255,.085);
-      --bg:#07111f;
-      --radius:22px;
-      --shadow:0 24px 70px rgba(0,0,0,.34);
+      --hold:#00d9b7;--relax:#79b8ff;--done:#a29bfe;--danger:#ff7675;
+      --text:#f5f7fb;--muted:rgba(245,247,251,.52);--line:rgba(255,255,255,.10);
+      --surface:rgba(255,255,255,.055);--surface2:rgba(255,255,255,.085);
+      --bg:#07111f;--radius:22px;--shadow:0 24px 70px rgba(0,0,0,.34);
     }
-
     *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
     html,body{min-height:100%;height:100%;background:#07111f;overscroll-behavior:none;overflow:hidden}
-    body{
-      position:fixed;
-      inset:0;
-      width:100%;
-      min-height:100vh;min-height:100svh;
-      color:var(--text);
-      font-family:'Noto Sans JP',-apple-system,BlinkMacSystemFont,sans-serif;
-      background:
-        radial-gradient(circle at 22% 4%,rgba(0,217,183,.22),transparent 32%),
-        radial-gradient(circle at 86% 92%,rgba(121,184,255,.18),transparent 36%),
-        linear-gradient(145deg,#07111f 0%,#09182a 48%,#050b14 100%);
-      overflow:hidden;
-      touch-action:pan-y;
-      opacity:1;
-    }
-    body::before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;
-      background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-      background-size:26px 26px;
-      mask-image:linear-gradient(to bottom,black,transparent 82%);
-    }
+    body{position:fixed;inset:0;width:100%;color:var(--text);font-family:'Noto Sans JP',-apple-system,BlinkMacSystemFont,sans-serif;background:radial-gradient(circle at 22% 4%,rgba(0,217,183,.22),transparent 32%),radial-gradient(circle at 86% 92%,rgba(121,184,255,.18),transparent 36%),linear-gradient(145deg,#07111f 0%,#09182a 48%,#050b14 100%);overflow:hidden;touch-action:pan-y}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:26px 26px;mask-image:linear-gradient(to bottom,black,transparent 82%)}
     button,select,input{font:inherit}
     button,select{cursor:pointer}
     button{user-select:none;border:none}
     button:active{transform:scale(.98)}
     .hidden{display:none!important}
 
-    /* ===== SPLASH SCREEN ===== */
-    #splash{
-      position:fixed;
-      inset:0;
-      z-index:9999;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#07111f;
-      opacity:1;
-      transition:opacity .8s ease;
-      pointer-events:auto;
-    }
-    #splash.hide{
-      opacity:0;
-      pointer-events:none;
-    }
-    .splash-logo{
-      font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(54px,16vw,76px);
-      letter-spacing:.25em;
-      line-height:1;
-      padding-left:.25em;
-      background:linear-gradient(135deg,var(--hold),var(--relax));
-      -webkit-background-clip:text;
-      background-clip:text;
-      -webkit-text-fill-color:transparent;
-      filter:drop-shadow(0 0 24px rgba(0,217,183,.34));
-      opacity:0;
-      transform:translateY(8px);
-      animation:splashLogoIn .6s ease forwards;
-    }
-    @keyframes splashLogoIn{
-      from{opacity:0;transform:translateY(8px)}
-      to{opacity:1;transform:translateY(0)}
-    }
-
-    .phone-shell{
-      width:min(450px,100%);
-      margin:0 auto;
-      height:100vh;height:100svh;
-      padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));
-    }
-    .app{
-      position:relative;
-      opacity:1;
-      transform:none;
-      height:calc(100vh - 24px);height:calc(100svh - 24px);
-      border:1px solid rgba(255,255,255,.11);
-      border-radius:34px;
-      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      backdrop-filter:blur(18px);
-    }
-    .app::after{
-      content:"";position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(180deg,rgba(255,255,255,.07),transparent 14%,transparent 84%,rgba(255,255,255,.035));
-    }
-    .content{
-      position:relative;z-index:1;padding:18px 14px 14px;height:100%;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-      opacity:0;
-      transition:opacity .8s ease;
-    }
-    .content.show{opacity:1}
+    .phone-shell{width:min(450px,100%);margin:0 auto;height:100vh;height:100svh;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+    .app{position:relative;height:calc(100vh - 24px);height:calc(100svh - 24px);border:1px solid rgba(255,255,255,.11);border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));box-shadow:var(--shadow);overflow:hidden;backdrop-filter:blur(18px)}
+    .app::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent 14%,transparent 84%,rgba(255,255,255,.035))}
+    .content{position:relative;z-index:1;padding:18px 14px 14px;height:100%;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.14em}
     .pill{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:999px;padding:7px 10px;display:flex;align-items:center;gap:6px}
     .dot{width:7px;height:7px;border-radius:50%;background:var(--hold);box-shadow:0 0 12px var(--hold)}
-
     .logo{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(50px,13vw,68px);letter-spacing:.22em;line-height:1;margin:6px 0 14px;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 22px rgba(0,217,183,.26))}
     .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
 
     .select-wrap{position:relative;margin-bottom:10px}.select-wrap::after{content:'⌄';position:absolute;right:17px;top:50%;transform:translateY(-58%);color:var(--hold);font-size:28px;pointer-events:none}
     select{width:100%;appearance:none;-webkit-appearance:none;border:1px solid rgba(0,217,183,.38);background:rgba(0,217,183,.075);color:#fff;border-radius:var(--radius);padding:15px 48px 15px 16px;font-size:16px;font-weight:900;outline:none}
     .levels{display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;margin-bottom:10px}.levels button{background:transparent;color:rgba(255,255,255,.44);padding:12px 0;font-size:12px;font-weight:900;letter-spacing:.12em;border-right:1px solid var(--line)}.levels button:last-child{border-right:none}.levels button.active{background:linear-gradient(135deg,rgba(0,217,183,.28),rgba(121,184,255,.18));color:var(--hold);box-shadow:inset 0 0 24px rgba(0,217,183,.08)}
-    .summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}.summary-card{text-align:center;padding:11px 6px 9px;border-radius:18px}.s-label{font-size:10px;color:var(--muted);letter-spacing:.12em;font-weight:900;margin-bottom:4px}.summary-card input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.13);color:#fff;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;outline:none;letter-spacing:.04em}.summary-card input:focus{border-bottom-color:var(--hold)}.s-unit{font-size:10px;color:var(--muted);margin-top:4px}.total-line{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em;margin:-2px 0 10px}
+    .summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}.summary-card{text-align:center;padding:11px 6px 9px;border-radius:18px}.s-label{font-size:10px;color:var(--muted);letter-spacing:.12em;font-weight:900;margin-bottom:4px}.summary-card input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.13);color:#fff;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;outline:none;letter-spacing:.04em;-moz-appearance:textfield}.summary-card input::-webkit-inner-spin-button,.summary-card input::-webkit-outer-spin-button{-webkit-appearance:none}.summary-card input:focus{border-bottom-color:var(--hold)}.s-unit{font-size:10px;color:var(--muted);margin-top:4px}.total-line{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em;margin:-2px 0 10px}
 
     .guide-card{margin-bottom:10px;overflow:hidden}.guide-head{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);font-weight:700}.guide-head strong{color:#fff}.guide-image-wrap{padding:8px;background:rgba(255,255,255,.025)}.guide-image{display:grid;place-items:center;width:100%;height:178px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(135deg,rgba(0,217,183,.16),rgba(121,184,255,.10));color:rgba(255,255,255,.72);font-size:12px;font-weight:900;letter-spacing:.12em;text-align:center;cursor:pointer;overflow:hidden}.guide-image img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}.guide-note{padding:8px 12px 11px;color:var(--muted);font-size:11px;text-align:center}.side-badge{display:none;margin:0 10px 9px;padding:7px 14px;border-radius:999px;background:rgba(0,217,183,.10);border:1px solid rgba(0,217,183,.28);color:var(--hold);font-size:12px;font-weight:900;text-align:center;letter-spacing:.1em}.side-badge.visible{display:block}
+
     .start-btn{width:100%;height:66px;border-radius:22px;background:linear-gradient(135deg,var(--hold),#0097a7);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:26px;font-weight:900;letter-spacing:.34em;text-shadow:0 1px rgba(0,0,0,.22);box-shadow:0 0 34px rgba(0,217,183,.26),inset 0 1px rgba(255,255,255,.18);margin-bottom:10px}
+
     .sound{padding:13px 12px}.sound-title{font-size:13px;font-weight:900;margin-bottom:10px}.bgm-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px}.switch{position:relative;width:48px;height:26px}.switch input{display:none}.track{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,.14);transition:.25s}.track::before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:white;transition:.25s}.switch input:checked+.track{background:var(--hold)}.switch input:checked+.track::before{transform:translateX(22px)}.sound-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.sound-block{border-right:1px solid var(--line);padding-right:6px;text-align:center}.sound-block:last-child{border-right:none;padding-right:0}.sound-label{font-size:10px;color:var(--muted);margin-bottom:6px}.sound-block select{font-size:11px;padding:7px 18px 7px 8px;border-color:rgba(255,255,255,.12);border-radius:10px;background:rgba(0,0,0,.28)}
+
     .footer{text-align:center;color:rgba(255,255,255,.32);font-size:10px;letter-spacing:.32em;padding-top:12px;margin-top:auto}
 
-    #countdownScreen,#runScreen{align-items:center;justify-content:center;gap:12px;min-height:calc(100vh - 68px);min-height:calc(100svh - 68px);text-align:center}.screen-flex{display:flex;flex-direction:column}.cd-exercise,.run-exercise{font-size:11px;letter-spacing:.26em;color:var(--muted);font-weight:900;text-transform:uppercase;line-height:1.6}.cd-side,.run-side-label{font-size:13px;font-weight:900;letter-spacing:.18em;color:var(--hold);background:rgba(0,217,183,.1);border:1px solid rgba(0,217,183,.26);padding:5px 16px;border-radius:999px;min-height:30px}.cd-number{font-family:'Bebas Neue',sans-serif;font-size:clamp(110px,32vw,172px);color:var(--hold);line-height:1;animation:pop .42s ease-out}.cd-label,.phase-label{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.42em;color:var(--muted)}@keyframes pop{0%{transform:scale(1.35);opacity:0}100%{transform:scale(1);opacity:1}}
-    .phase-label{font-size:24px;font-weight:900}.phase-label.hold{color:var(--hold);text-shadow:0 0 18px rgba(0,217,183,.45)}.phase-label.relax{color:var(--relax);text-shadow:0 0 18px rgba(121,184,255,.42)}.run-side-label{opacity:0;transition:.3s}.run-side-label.visible{opacity:1}.ring-wrap{position:relative;width:min(72vw,286px);aspect-ratio:1;display:grid;place-items:center}.ring-svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}.ring-track{fill:none;stroke:rgba(255,255,255,.065);stroke-width:12}.ring-prog{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .22s linear,stroke .3s,filter .3s}.time-big{position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(70px,18vw,104px);line-height:1}.time-big.hold{color:var(--hold)}.time-big.relax{color:var(--relax)}.blink{animation:blink .5s infinite}@keyframes blink{50%{opacity:.35}}.sets-row{display:flex;align-items:baseline;gap:5px}.sets-label{font-size:11px;letter-spacing:.36em;color:var(--muted);font-weight:900}.sets-count{font-family:'Bebas Neue',sans-serif;font-size:48px}.sets-total{color:var(--muted);font-size:15px}.toast{padding:11px 18px;border:1px solid rgba(255,255,255,.10);border-radius:14px;color:rgba(255,255,255,.72);font-size:12px;background:rgba(7,17,31,.72);opacity:0;transform:translateY(6px);transition:.2s;width:min(310px,86vw)}.toast.show{opacity:1;transform:translateY(0)}.run-controls{display:flex;gap:12px}.run-btn{height:52px;min-width:112px;padding:0 22px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.52);border-radius:16px;font-family:'Bebas Neue',sans-serif;font-size:16px;font-weight:900;letter-spacing:.22em}.run-btn.active-hold{color:var(--hold);border-color:rgba(0,217,183,.42)}.run-btn.active-relax{color:var(--relax);border-color:rgba(121,184,255,.42)}
-    .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}.complete-box{width:min(330px,88vw);border:1px solid rgba(0,217,183,.42);border-radius:26px;background:rgba(7,17,31,.97);padding:30px 20px 22px;text-align:center;box-shadow:0 0 54px rgba(0,217,183,.17)}.complete-box h2{font-family:'Bebas Neue',sans-serif;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:36px;letter-spacing:.2em;margin-bottom:10px}.complete-box p{color:var(--muted);line-height:1.8;margin-bottom:20px;font-size:14px;white-space:pre-line}.complete-box button{width:100%;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--hold),#0097a7);color:white;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.22em}
+    /* Countdown & Run screens */
+    #countdownScreen,#runScreen{align-items:center;justify-content:center;gap:12px;height:100%;text-align:center}
+    .screen-flex{display:flex;flex-direction:column}
+    .cd-exercise,.run-exercise{font-size:11px;letter-spacing:.26em;color:var(--muted);font-weight:900;text-transform:uppercase;line-height:1.6}
+    .cd-side,.run-side-label{font-size:13px;font-weight:900;letter-spacing:.18em;color:var(--hold);background:rgba(0,217,183,.1);border:1px solid rgba(0,217,183,.26);padding:5px 16px;border-radius:999px;min-height:30px}
+    .cd-number{font-family:'Bebas Neue',sans-serif;font-size:clamp(110px,32vw,172px);color:var(--hold);line-height:1;animation:pop .42s ease-out}
+    .cd-label{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.42em;color:var(--muted)}
+    @keyframes pop{0%{transform:scale(1.35);opacity:0}100%{transform:scale(1);opacity:1}}
+    .phase-label{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.42em}
+    .phase-label.hold{color:var(--hold);text-shadow:0 0 18px rgba(0,217,183,.45)}
+    .phase-label.relax{color:var(--relax);text-shadow:0 0 18px rgba(121,184,255,.42)}
+    .run-side-label{opacity:0;transition:.3s}.run-side-label.visible{opacity:1}
+    .ring-wrap{position:relative;width:min(72vw,286px);aspect-ratio:1;display:grid;place-items:center}
+    .ring-svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+    .ring-track{fill:none;stroke:rgba(255,255,255,.065);stroke-width:12}
+    .ring-prog{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .95s linear,stroke .3s,filter .3s}
+    .time-big{position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(70px,18vw,104px);line-height:1}
+    .time-big.hold{color:var(--hold)}.time-big.relax{color:var(--relax)}
+    .blink{animation:blink .5s infinite}@keyframes blink{50%{opacity:.35}}
+    .sets-row{display:flex;align-items:baseline;gap:5px}
+    .sets-label{font-size:11px;letter-spacing:.36em;color:var(--muted);font-weight:900}
+    .sets-count{font-family:'Bebas Neue',sans-serif;font-size:48px}
+    .sets-total{color:var(--muted);font-size:15px}
+    .toast{padding:11px 18px;border:1px solid rgba(255,255,255,.10);border-radius:14px;color:rgba(255,255,255,.72);font-size:12px;background:rgba(7,17,31,.72);opacity:0;transform:translateY(6px);transition:.2s;width:min(310px,86vw)}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .run-controls{display:flex;gap:12px}
+    .run-btn{height:52px;min-width:112px;padding:0 22px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.52);border-radius:16px;font-family:'Bebas Neue',sans-serif;font-size:16px;font-weight:900;letter-spacing:.22em}
+    .run-btn.active-hold{color:var(--hold);border-color:rgba(0,217,183,.42)}
+    .run-btn.active-relax{color:var(--relax);border-color:rgba(121,184,255,.42)}
+
+    /* Modals */
+    .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:16px}
+    .modal.show{display:flex}
+    .modal-inner{width:min(100%,900px);max-height:92svh;position:relative}
+    .modal-inner img{width:100%;max-height:92svh;object-fit:contain;display:block;border-radius:12px;background:#fff}
+    .modal-close{position:absolute;top:-10px;right:-6px;width:40px;height:40px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.8);color:#fff;font-size:22px;line-height:1}
+    .complete-box{width:min(330px,88vw);border:1px solid rgba(0,217,183,.42);border-radius:26px;background:rgba(7,17,31,.97);padding:30px 20px 22px;text-align:center;box-shadow:0 0 54px rgba(0,217,183,.17)}
+    .complete-box h2{font-family:'Bebas Neue',sans-serif;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:36px;letter-spacing:.2em;margin-bottom:10px}
+    .complete-box p{color:var(--muted);line-height:1.8;margin-bottom:20px;font-size:14px;white-space:pre-line}
+    .complete-box button{width:100%;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--hold),#0097a7);color:white;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.22em}
+
     @media(max-height:760px){.logo{font-size:42px;margin:2px 0 10px}.guide-image{height:128px}.summary-card input{font-size:26px}.start-btn{height:56px}.sound{padding:10px}.content{padding-top:14px}}
   </style>
 </head>
 <body>
-<div id="splash">
-  <div class="splash-logo">STRETCH</div>
-</div>
-
 <div class="phone-shell">
   <main class="app">
     <div class="content">
+
+      <!-- SETTINGS -->
       <section id="settingsScreen">
-        <div class="topbar"><div class="pill"><span class="dot"></span>READY</div><div class="pill">PWA MODE</div></div>
+        <div class="topbar"><div class="pill"><span class="dot"></span>READY</div><div class="pill">STRETCH TIMER</div></div>
         <div class="logo">STRETCH</div>
         <div class="select-wrap"><select id="exerciseSelect"></select></div>
-        <div class="levels panel" id="levelButtons"><button data-level="easy">EASY</button><button data-level="normal" class="active">NORMAL</button><button data-level="deep">DEEP</button></div>
+        <div class="levels panel" id="levelButtons">
+          <button data-level="easy">EASY</button>
+          <button data-level="normal" class="active">NORMAL</button>
+          <button data-level="deep">DEEP</button>
+        </div>
         <div class="summary">
           <div class="summary-card panel"><div class="s-label">HOLD</div><input type="number" id="inpWork" min="1" max="999" value="30"><div class="s-unit">秒</div></div>
           <div class="summary-card panel"><div class="s-label">RELAX</div><input type="number" id="inpRest" min="1" max="999" value="10"><div class="s-unit">秒</div></div>
-          <div class="summary-card panel"><div class="s-label">SET</div><input type="number" id="inpSets" min="1" max="99" value="1"><div class="s-unit" id="totalTimeLabel">1分</div></div>
+          <div class="summary-card panel"><div class="s-label">SET</div><input type="number" id="inpSets" min="1" max="99" value="1"><div class="s-unit" id="totalTimeLabel">40秒</div></div>
         </div>
-        <div class="total-line" id="totalTimeDetail">TOTAL SESSION TIME</div>
+        <div class="total-line" id="totalTimeDetail">TOTAL 40秒</div>
         <div class="guide-card panel">
           <div class="guide-head"><strong>フォーム確認</strong><span>タップで拡大</span></div>
-          <div class="guide-image-wrap"><div id="guideImage" class="guide-image">IMAGE PREVIEW</div></div>
+          <div class="guide-image-wrap"><div id="guideImage" class="guide-image">CUSTOM TIMER</div></div>
           <div class="side-badge" id="sideBadge">左右各30秒 × 自動切替</div>
           <div class="guide-note" id="guideNote">種目を選択してフォームを確認</div>
         </div>
@@ -184,21 +137,55 @@
         <div class="footer">actcreation-lab.com</div>
       </section>
 
-      <section id="countdownScreen" class="hidden screen-flex"><div class="cd-exercise" id="cdExercise"></div><div class="cd-side" id="cdSide"></div><div class="cd-number" id="cdNumber">3</div><div class="cd-label">GET READY</div></section>
+      <!-- COUNTDOWN -->
+      <section id="countdownScreen" class="hidden screen-flex">
+        <div class="cd-exercise" id="cdExercise"></div>
+        <div class="cd-side" id="cdSide"></div>
+        <div class="cd-number" id="cdNumber">3</div>
+        <div class="cd-label">GET READY</div>
+      </section>
 
+      <!-- RUN -->
       <section id="runScreen" class="hidden screen-flex">
-        <div class="run-exercise" id="runExercise"></div><div class="run-side-label" id="runSideLabel"></div><div class="phase-label hold" id="phaseLabel">HOLD</div>
-        <div class="ring-wrap"><svg class="ring-svg" viewBox="0 0 220 220" aria-hidden="true"><circle class="ring-track" cx="110" cy="110" r="92"/><circle class="ring-prog" id="ringProg" cx="110" cy="110" r="92"/></svg><div class="time-big hold" id="timeBig">30</div></div>
-        <div class="sets-row"><span class="sets-label">SET</span><span class="sets-count" id="setsCount">1</span><span class="sets-total" id="setsTotal">/ 1</span></div>
+        <div class="run-exercise" id="runExercise"></div>
+        <div class="run-side-label" id="runSideLabel"></div>
+        <div class="phase-label hold" id="phaseLabel">HOLD</div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 220 220" aria-hidden="true">
+            <circle class="ring-track" cx="110" cy="110" r="92"/>
+            <circle class="ring-prog" id="ringProg" cx="110" cy="110" r="92"/>
+          </svg>
+          <div class="time-big hold" id="timeBig">30</div>
+        </div>
+        <div class="sets-row"><span class="sets-label">SET&nbsp;</span><span class="sets-count" id="setsCount">1</span><span class="sets-total" id="setsTotal">&nbsp;/ 1</span></div>
         <div class="toast" id="toast">まもなく切り替わります</div>
-        <div class="run-controls"><button class="run-btn active-hold" id="pauseBtn">PAUSE</button><button class="run-btn" id="stopBtn">STOP</button></div>
+        <div class="run-controls">
+          <button class="run-btn active-hold" id="pauseBtn">PAUSE</button>
+          <button class="run-btn" id="stopBtn">STOP</button>
+        </div>
         <div class="footer">actcreation-lab.com</div>
       </section>
+
     </div>
   </main>
 </div>
 
-<div id="completeModal" class="modal"><div class="complete-box"><h2>COMPLETE</h2><p id="completeMsg">全セット完了！\nお疲れさまでした。</p><button id="completeOk">OK</button></div></div>
+<!-- IMAGE MODAL -->
+<div id="imageModal" class="modal">
+  <div class="modal-inner">
+    <button class="modal-close" id="modalClose">×</button>
+    <img id="modalImage" src="" alt="拡大">
+  </div>
+</div>
+
+<!-- COMPLETE MODAL -->
+<div id="completeModal" class="modal">
+  <div class="complete-box">
+    <h2>COMPLETE</h2>
+    <p id="completeMsg">全セット完了！<br>お疲れさまでした。</p>
+    <button id="completeOk">OK</button>
+  </div>
+</div>
 
 <script>
 const exercises={
@@ -209,96 +196,173 @@ const exercises={
   "フロントプランク":{image:"frontplank.png",bilateral:false,presets:{easy:{work:20,rest:10,sets:1},normal:{work:30,rest:10,sets:1},deep:{work:45,rest:15,sets:2}}},
   "チェストオープナー":{image:"chestopenerstrech.png",bilateral:false,presets:{easy:{work:20,rest:10,sets:1},normal:{work:30,rest:10,sets:1},deep:{work:45,rest:15,sets:2}}},
 };
-const CIRCUM=2*Math.PI*92;const $=id=>document.getElementById(id);
-const state={exercise:"カスタム",level:"normal",phase:"work",currentSet:1,totalSets:1,workSec:30,restSec:10,remaining:30,duration:30,running:false,timer:null,audioCtx:null,isBilateral:false,inRightSide:false};
+const CIRCUM=2*Math.PI*92;
+const $=id=>document.getElementById(id);
+const state={exercise:"カスタム",level:"normal",phase:"work",currentSet:1,totalSets:1,workSec:30,restSec:10,duration:30,remaining:30,running:false,timer:null,audioCtx:null,isBilateral:false,inRightSide:false};
+
 Object.keys(exercises).forEach(name=>{const opt=document.createElement('option');opt.value=name;opt.textContent=name;$('exerciseSelect').appendChild(opt)});
-function formatTime(sec){const m=Math.floor(sec/60),s=sec%60;if(m===0)return `${s}秒`;return s===0?`${m}分`:`${m}分${s}秒`}
-function calcTotal(w,r,s,b){return (b?(w*2+r):(w+r))*s}
-function updateTotalLabel(){const w=parseInt($('inpWork').value)||0,r=parseInt($('inpRest').value)||0,s=parseInt($('inpSets').value)||0,total=calcTotal(w,r,s,exercises[state.exercise].bilateral);$('totalTimeLabel').textContent=formatTime(total);$('totalTimeDetail').textContent=`TOTAL ${formatTime(total)}`}
-function updateSettingsView(){const ex=exercises[state.exercise],p=ex.presets[state.level];$('inpWork').value=p.work;$('inpRest').value=p.rest;$('inpSets').value=p.sets;updateTotalLabel();document.querySelectorAll('#levelButtons button').forEach(btn=>btn.classList.toggle('active',btn.dataset.level===state.level));const box=$('guideImage');box.innerHTML=ex.image?`<img src="${ex.image}" alt="${state.exercise}のやり方" onerror="this.parentElement.textContent='${state.exercise}<br>画像ファイルを同じ階層に配置'">`:'CUSTOM TIMER';$('guideNote').textContent=state.exercise+'のフォームを確認';const badge=$('sideBadge');if(ex.bilateral){badge.textContent=`左右各${p.work}秒 × 自動切替`;badge.classList.add('visible')}else{badge.classList.remove('visible')}}
+
+function formatTime(sec){const m=Math.floor(sec/60),s=sec%60;if(m===0)return`${s}秒`;return s===0?`${m}分`:`${m}分${s}秒`}
+function calcTotal(w,r,sets,b){return(b?(w*2+r):(w+r))*sets}
+
+function updateTotalLabel(){
+  const w=parseInt($('inpWork').value)||0,r=parseInt($('inpRest').value)||0,s=parseInt($('inpSets').value)||0;
+  const total=calcTotal(w,r,s,exercises[state.exercise].bilateral);
+  $('totalTimeLabel').textContent=formatTime(total);
+  $('totalTimeDetail').textContent=`TOTAL ${formatTime(total)}`;
+}
+
+function updateSettingsView(){
+  const ex=exercises[state.exercise],p=ex.presets[state.level];
+  $('inpWork').value=p.work;$('inpRest').value=p.rest;$('inpSets').value=p.sets;
+  updateTotalLabel();
+  document.querySelectorAll('#levelButtons button').forEach(btn=>btn.classList.toggle('active',btn.dataset.level===state.level));
+  const box=$('guideImage');
+  if(ex.image){
+    box.innerHTML=`<img src="${ex.image}" alt="${state.exercise}のやり方" onclick="openModal(this.src)" onerror="this.parentElement.innerHTML='画像を配置してください'">`;
+  }else{
+    box.innerHTML='CUSTOM TIMER';
+  }
+  $('guideNote').textContent=state.exercise+'のフォームを確認';
+  const badge=$('sideBadge');
+  if(ex.bilateral){badge.textContent=`左右各${p.work}秒 × 自動切替`;badge.classList.add('visible')}
+  else{badge.classList.remove('visible')}
+}
+
 ['inpWork','inpRest','inpSets'].forEach(id=>$(id).addEventListener('input',updateTotalLabel));
 document.querySelectorAll('#levelButtons button').forEach(btn=>btn.addEventListener('click',()=>{state.level=btn.dataset.level;updateSettingsView()}));
 $('exerciseSelect').addEventListener('change',e=>{state.exercise=e.target.value;updateSettingsView()});
-function initAudio(){if(!state.audioCtx)state.audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(state.audioCtx.state==='suspended')state.audioCtx.resume()}
-function tone(freq,dur,type='sine',delay=0,vol=.3){if(!state.audioCtx)return;const ctx=state.audioCtx,o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,ctx.currentTime+delay);g.gain.setValueAtTime(.0001,ctx.currentTime+delay);g.gain.exponentialRampToValueAtTime(vol,ctx.currentTime+delay+.015);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+delay+dur);o.connect(g).connect(ctx.destination);o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+dur+.02)}
-function playSound(name){if(name==='none')return;initAudio();if(navigator.vibrate)navigator.vibrate(55);if(name==='beep'){tone(880,.15);tone(880,.15,'sine',.2)}if(name==='bell'){tone(660,.18);tone(990,.22,'sine',.18)}if(name==='blip'){tone(520,.08,'square');tone(740,.08,'square',.1)}if(name==='fanfare'){tone(523,.14);tone(659,.14,'sine',.16);tone(784,.28,'sine',.32)}}
+
+function openModal(src){$('modalImage').src=src;$('imageModal').classList.add('show')}
+$('modalClose').addEventListener('click',()=>$('imageModal').classList.remove('show'));
+$('imageModal').addEventListener('click',e=>{if(e.target.id==='imageModal')$('imageModal').classList.remove('show')});
+
+// ── Audio ──
+function initAudio(){if(!state.audioCtx)state.audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(state.audioCtx.state==='suspended')state.audioCtx.resume()}
+function unlockAudio(){initAudio();const buf=state.audioCtx.createBuffer(1,1,22050);const src=state.audioCtx.createBufferSource();src.buffer=buf;src.connect(state.audioCtx.destination);src.start(0)}
+function tone(freq,dur,type='sine',delay=0,vol=0.4){if(!state.audioCtx)return;const ctx=state.audioCtx,o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,ctx.currentTime+delay);g.gain.setValueAtTime(.0001,ctx.currentTime+delay);g.gain.exponentialRampToValueAtTime(vol,ctx.currentTime+delay+.015);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+delay+dur);o.connect(g).connect(ctx.destination);o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+dur+.02)}
+function playSound(name){if(name==='none')return;initAudio();if(navigator.vibrate)navigator.vibrate(60);if(name==='beep'){tone(880,.15);tone(880,.15,'sine',.2)}if(name==='bell'){tone(660,.18);tone(990,.22,'sine',.18)}if(name==='blip'){tone(520,.08,'square');tone(740,.08,'square',.1)}if(name==='fanfare'){tone(523,.14);tone(659,.14,'sine',.16);tone(784,.28,'sine',.32)}}
+['sndWork','sndRest','sndDone'].forEach(id=>$(id).addEventListener('change',e=>playSound(e.target.value)));
 
 // ── BGM ──
-const BGM={gain:null,nodes:[],current:null,pulseTimer:null};
-function stopBGM(){
-  if(BGM.pulseTimer){clearTimeout(BGM.pulseTimer);BGM.pulseTimer=null}
-  if(BGM.gain&&state.audioCtx){
-    const ctx=state.audioCtx,now=ctx.currentTime;
-    BGM.gain.gain.cancelScheduledValues(now);
-    BGM.gain.gain.setValueAtTime(Math.max(BGM.gain.gain.value,.0001),now);
-    BGM.gain.gain.linearRampToValueAtTime(.0001,now+.45);
-  }
-  BGM.nodes.forEach(n=>{try{n.stop(state.audioCtx.currentTime+.5)}catch(e){}});
-  BGM.nodes=[];BGM.gain=null;BGM.current=null;
+const BGM={ctx:null,gainNode:null,nodes:[],current:null};
+function stopBGM(cb){
+  if(!BGM.gainNode){if(cb)cb();return}
+  const ctx=BGM.ctx,g=BGM.gainNode,now=ctx.currentTime;
+  g.gain.cancelScheduledValues(now);g.gain.setValueAtTime(Math.max(g.gain.value,.0001),now);g.gain.linearRampToValueAtTime(.0001,now+0.8);
+  setTimeout(()=>{BGM.nodes.forEach(n=>{try{n.stop()}catch(e){}});BGM.nodes=[];BGM.gainNode=null;BGM.current=null;if(cb)cb()},850);
 }
-function startBGM(mode){
-  if(!$('bgmToggle').checked)return;
-  initAudio();
-  if(BGM.current===mode)return;
-  stopBGM();
+function startMeditationBGM(){
   const ctx=state.audioCtx,master=ctx.createGain();
-  master.gain.setValueAtTime(.0001,ctx.currentTime);
-  master.gain.linearRampToValueAtTime(mode==='hold'?.10:.065,ctx.currentTime+.7);
-  master.connect(ctx.destination);
-  BGM.gain=master;BGM.current=mode;
-  const freqs=mode==='hold'?[110,165,220,330]:[220,330,440,660];
-  freqs.forEach((f,i)=>{
+  master.gain.setValueAtTime(.0001,ctx.currentTime);master.gain.linearRampToValueAtTime(.10,ctx.currentTime+0.8);
+  master.connect(ctx.destination);BGM.gainNode=master;BGM.ctx=ctx;BGM.current='hold';
+  [110,165,220,330].forEach((f,i)=>{
     const o=ctx.createOscillator(),g=ctx.createGain(),lfo=ctx.createOscillator(),lfoG=ctx.createGain();
-    o.type='sine';o.frequency.value=f;
-    lfo.frequency.value=(mode==='hold'?.08:.12)+i*.035;
-    lfoG.gain.value=mode==='hold'?.45:.34;
-    lfo.connect(lfoG).connect(o.frequency);
-    g.gain.value=[.34,.20,.24,.11][i];
-    o.connect(g).connect(master);
-    lfo.start();o.start();
-    BGM.nodes.push(lfo,o);
+    o.type='sine';o.frequency.value=f;lfo.frequency.value=0.08+i*.03;lfoG.gain.value=0.5;
+    lfo.connect(lfoG).connect(o.frequency);g.gain.value=[.35,.20,.25,.12][i];
+    o.connect(g).connect(master);lfo.start();o.start();BGM.nodes.push(lfo,o);
   });
-  function pulse(){
-    if(BGM.current!==mode||!BGM.gain)return;
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.type='sine';o.frequency.value=mode==='hold'?432:528;
-    g.gain.setValueAtTime(.0001,ctx.currentTime);
-    g.gain.linearRampToValueAtTime(mode==='hold'?.055:.04,ctx.currentTime+.16);
-    g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+(mode==='hold'?3.7:3.0));
-    o.connect(g).connect(master);o.start();o.stop(ctx.currentTime+4);
-    BGM.pulseTimer=setTimeout(pulse,mode==='hold'?8000:10000);
-  }
-  pulse();
+  function bowlPulse(){if(BGM.current!=='hold')return;const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=432;g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.linearRampToValueAtTime(.07,ctx.currentTime+.1);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+4);o.connect(g).connect(master);o.start();o.stop(ctx.currentTime+4.5);setTimeout(bowlPulse,8000)}
+  bowlPulse();
+}
+function startRelaxBGM(){
+  const ctx=state.audioCtx,master=ctx.createGain();
+  master.gain.setValueAtTime(.0001,ctx.currentTime);master.gain.linearRampToValueAtTime(.065,ctx.currentTime+0.8);
+  master.connect(ctx.destination);BGM.gainNode=master;BGM.ctx=ctx;BGM.current='relax';
+  [220,330,440,660].forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain(),lfo=ctx.createOscillator(),lfoG=ctx.createGain();
+    o.type='sine';o.frequency.value=f;lfo.frequency.value=0.12+i*.04;lfoG.gain.value=0.34;
+    lfo.connect(lfoG).connect(o.frequency);g.gain.value=[.3,.2,.35,.1][i];
+    o.connect(g).connect(master);lfo.start();o.start();BGM.nodes.push(lfo,o);
+  });
+  function relaxPulse(){if(BGM.current!=='relax')return;const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=528;g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.linearRampToValueAtTime(.04,ctx.currentTime+.2);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+3.5);o.connect(g).connect(master);o.start();o.stop(ctx.currentTime+4);setTimeout(relaxPulse,10000)}
+  relaxPulse();
+}
+function startBGM(phase){
+  if(!$('bgmToggle').checked)return;initAudio();BGM.ctx=state.audioCtx;
+  if(BGM.current===phase)return;
+  if(BGM.current){stopBGM(()=>{phase==='hold'?startMeditationBGM():startRelaxBGM()})}
+  else{phase==='hold'?startMeditationBGM():startRelaxBGM()}
 }
 $('bgmToggle').addEventListener('change',()=>{if(!$('bgmToggle').checked)stopBGM();else if(state.running)startBGM(state.phase==='work'?'hold':'relax')});
-['sndWork','sndRest','sndDone'].forEach(id=>$(id).addEventListener('change',e=>playSound(e.target.value)));
-function startCountdown(label,cb){let count=3;$('cdExercise').textContent=state.exercise;$('cdSide').textContent=label||'';$('cdSide').style.visibility=label?'visible':'hidden';$('cdNumber').textContent=count;$('settingsScreen').classList.add('hidden');$('runScreen').classList.add('hidden');$('countdownScreen').classList.remove('hidden');const cd=setInterval(()=>{count--;if(count>0){const el=$('cdNumber');el.style.animation='none';el.offsetHeight;el.style.animation='pop .42s ease-out';el.textContent=count}else{clearInterval(cd);$('countdownScreen').classList.add('hidden');cb()}},1000)}
-$('startBtn').addEventListener('click',()=>{initAudio();state.exercise=$('exerciseSelect').value;state.workSec=Math.max(1,parseInt($('inpWork').value)||30);state.restSec=Math.max(1,parseInt($('inpRest').value)||10);state.totalSets=Math.max(1,parseInt($('inpSets').value)||1);state.isBilateral=exercises[state.exercise].bilateral;state.currentSet=1;state.phase='work';state.inRightSide=false;state.duration=state.workSec;state.remaining=state.workSec;startCountdown(null,()=>{$('runScreen').classList.remove('hidden');$('runExercise').textContent=state.exercise;$('setsTotal').textContent='/ '+state.totalSets;updateRunView();startTick();startBGM('hold')})});
-function startTick(){if(state.running)return;state.running=true;state.timer=setInterval(tick,1000)}
-function tick(){if(state.remaining>0){state.remaining--;updateRunView();if(state.remaining===0){setTimeout(nextPhase,260)}}}
-function nextPhase(){if(state.phase==='work'){if(state.isBilateral&&!state.inRightSide){playSound($('sndWork').value);clearInterval(state.timer);state.timer=null;state.running=false;state.inRightSide=true;state.duration=state.workSec;state.remaining=state.workSec;$('runScreen').classList.add('hidden');startCountdown('右側へ切り替え',()=>{$('runScreen').classList.remove('hidden');updateRunView();startTick()});return}if(state.currentSet>=state.totalSets){finishAll();return}playSound($('sndWork').value);state.phase='rest';state.inRightSide=false;state.duration=state.restSec;state.remaining=state.restSec;startBGM('relax')}else{playSound($('sndRest').value);state.currentSet++;state.phase='work';state.inRightSide=false;state.duration=state.workSec;state.remaining=state.workSec;startBGM('hold')}updateRunView()}
-function finishAll(){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();playSound($('sndDone').value);$('completeMsg').textContent=state.exercise+'\n全'+state.totalSets+'セット完了！\nお疲れさまでした。';$('completeModal').classList.add('show')}
-function togglePause(){if(state.running){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();$('pauseBtn').textContent='RESUME';$('pauseBtn').className='run-btn'}else{startTick();startBGM(state.phase==='work'?'hold':'relax');$('pauseBtn').textContent='PAUSE';$('pauseBtn').className='run-btn active-'+(state.phase==='work'?'hold':'relax')}}
-function stopTimer(){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();$('runScreen').classList.add('hidden');$('settingsScreen').classList.remove('hidden');updateSettingsView()}
-$('pauseBtn').addEventListener('click',togglePause);$('stopBtn').addEventListener('click',stopTimer);$('completeOk').addEventListener('click',()=>{$('completeModal').classList.remove('show');$('runScreen').classList.add('hidden');$('settingsScreen').classList.remove('hidden');updateSettingsView()});
-const ringProg=$('ringProg');ringProg.style.strokeDasharray=CIRCUM;
-function updateRunView(){const isWork=state.phase==='work',ratio=state.duration?state.remaining/state.duration:0,phaseClass=isWork?'hold':'relax';ringProg.style.strokeDashoffset=state.remaining<=0?CIRCUM:CIRCUM*(1-ratio);ringProg.style.stroke=isWork?'var(--hold)':'var(--relax)';ringProg.style.filter=isWork?'drop-shadow(0 0 10px rgba(0,217,183,.62))':'drop-shadow(0 0 10px rgba(121,184,255,.55))';const timeEl=$('timeBig');timeEl.textContent=state.remaining;timeEl.className='time-big '+phaseClass+(state.remaining<=3&&state.remaining>0?' blink':'');const label=$('phaseLabel');if(isWork){label.textContent=state.isBilateral?(state.inRightSide?'RIGHT':'LEFT'):'HOLD';label.className='phase-label hold'}else{label.textContent='RELAX';label.className='phase-label relax'}const side=$('runSideLabel');if(isWork&&state.isBilateral){side.textContent=state.inRightSide?'右側':'左側';side.classList.add('visible')}else{side.classList.remove('visible')}$('setsCount').textContent=state.currentSet;if(state.running)$('pauseBtn').className='run-btn active-'+phaseClass;$('toast').classList.toggle('show',state.remaining<=3&&state.remaining>0)}
-updateSettingsView();
 
-window.addEventListener("load",()=>{
-  const splash=document.getElementById("splash");
-  const content=document.querySelector(".content");
+// ── Countdown ──
+function startCountdown(label,cb){
+  let count=3;
+  $('cdExercise').textContent=state.exercise;
+  $('cdSide').textContent=label||'';$('cdSide').style.visibility=label?'visible':'hidden';
+  $('cdNumber').textContent=count;
+  $('settingsScreen').classList.add('hidden');$('runScreen').classList.add('hidden');$('countdownScreen').classList.remove('hidden');
+  const cd=setInterval(()=>{count--;if(count>0){const el=$('cdNumber');el.style.animation='none';el.offsetHeight;el.style.animation='pop .42s ease-out';el.textContent=count}else{clearInterval(cd);$('countdownScreen').classList.add('hidden');cb()}},1000);
+}
 
-  setTimeout(()=>{
-    splash.classList.add("hide");
-    content.classList.add("show");
-
-    setTimeout(()=>{
-      splash.remove();
-    },800);
-
-  },1800);
+// ── Start ──
+$('startBtn').addEventListener('click',()=>{
+  unlockAudio();
+  state.exercise=$('exerciseSelect').value;state.workSec=Math.max(1,parseInt($('inpWork').value)||30);
+  state.restSec=Math.max(1,parseInt($('inpRest').value)||10);state.totalSets=Math.max(1,parseInt($('inpSets').value)||1);
+  state.isBilateral=exercises[state.exercise].bilateral;state.currentSet=1;state.phase='work';
+  state.inRightSide=false;state.duration=state.workSec;state.remaining=state.workSec;
+  startCountdown(null,()=>{
+    $('runScreen').classList.remove('hidden');
+    $('runExercise').textContent=state.exercise;$('setsTotal').textContent=' / '+state.totalSets;
+    updateRunView();startTick();startBGM('hold');
+  });
 });
+
+// ── Timer ──
+function startTick(){if(state.running)return;state.running=true;state.timer=setInterval(tick,1000)}
+function tick(){if(state.remaining>0){state.remaining--;updateRunView();if(state.remaining===0)nextPhase()}}
+
+function nextPhase(){
+  if(state.phase==='work'){
+    if(state.isBilateral&&!state.inRightSide){
+      playSound($('sndWork').value);clearInterval(state.timer);state.timer=null;state.running=false;
+      state.inRightSide=true;state.duration=state.workSec;state.remaining=state.workSec;
+      $('runScreen').classList.add('hidden');
+      startCountdown('右側へ切り替え',()=>{$('runScreen').classList.remove('hidden');updateRunView();startTick()});
+      return;
+    }
+    if(state.currentSet>=state.totalSets){finishAll();return}
+    playSound($('sndWork').value);state.phase='rest';state.inRightSide=false;
+    state.duration=state.restSec;state.remaining=state.restSec;startBGM('relax');
+  }else{
+    playSound($('sndRest').value);state.currentSet++;state.phase='work';state.inRightSide=false;
+    state.duration=state.workSec;state.remaining=state.workSec;startBGM('hold');
+  }
+  updateRunView();
+}
+
+function finishAll(){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();playSound($('sndDone').value);$('completeMsg').textContent=state.exercise+'\n全'+state.totalSets+'セット完了！\nお疲れさまでした。';$('completeModal').classList.add('show')}
+
+$('pauseBtn').addEventListener('click',()=>{
+  if(state.running){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();$('pauseBtn').textContent='RESUME';$('pauseBtn').className='run-btn'}
+  else{startTick();startBGM(state.phase==='work'?'hold':'relax');$('pauseBtn').textContent='PAUSE';$('pauseBtn').className='run-btn active-'+(state.phase==='work'?'hold':'relax')}
+});
+$('stopBtn').addEventListener('click',()=>{clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();$('runScreen').classList.add('hidden');$('settingsScreen').classList.remove('hidden');updateSettingsView()});
+$('completeOk').addEventListener('click',()=>{$('completeModal').classList.remove('show');$('runScreen').classList.add('hidden');$('settingsScreen').classList.remove('hidden');updateSettingsView()});
+
+// ── Ring ──
+const ringProg=$('ringProg');
+ringProg.style.strokeDasharray=CIRCUM;
+
+function updateRunView(){
+  const isWork=state.phase==='work',ratio=state.duration?state.remaining/state.duration:0,phaseClass=isWork?'hold':'relax';
+  ringProg.style.strokeDashoffset=CIRCUM*(1-ratio);
+  ringProg.style.stroke=isWork?'var(--hold)':'var(--relax)';
+  ringProg.style.filter=isWork?'drop-shadow(0 0 10px rgba(0,217,183,.62))':'drop-shadow(0 0 10px rgba(121,184,255,.55))';
+  const timeEl=$('timeBig');timeEl.textContent=state.remaining;timeEl.className='time-big '+phaseClass+(state.remaining<=3&&state.remaining>0?' blink':'');
+  const label=$('phaseLabel');
+  if(isWork){label.textContent=state.isBilateral?(state.inRightSide?'RIGHT':'LEFT'):'HOLD';label.className='phase-label hold'}
+  else{label.textContent='RELAX';label.className='phase-label relax'}
+  const side=$('runSideLabel');
+  if(isWork&&state.isBilateral){side.textContent=state.inRightSide?'右側':'左側';side.classList.add('visible')}else{side.classList.remove('visible')}
+  $('setsCount').textContent=state.currentSet;
+  if(state.running)$('pauseBtn').className='run-btn active-'+phaseClass;
+  $('toast').classList.toggle('show',state.remaining<=3&&state.remaining>0);
+}
+
+updateSettingsView();
 </script>
 </body>
 </html>
