@@ -512,7 +512,7 @@
 // bilateral: true → 左右各holdSec秒で自動切替（合計holdSec×2）
 const exercises = {
   "ニー・トゥ・チェスト＋スパイナルロッキング": {
-    image: "knees_to_chest.png",
+    image: "kneestochest.png",
     bilateral: false,
     presets: {
       easy:   { work: 20, rest: 10, sets: 1 },
@@ -521,7 +521,7 @@ const exercises = {
     }
   },
   "キャット・カウストレッチ": {
-    image: "cat-cow_stretch.png",
+    image: "catcowstretch.png",
     bilateral: false,
     presets: {
       easy:   { work: 30, rest: 10, sets: 1 },
@@ -657,7 +657,7 @@ function unlockAudio() {
   const src = state.audioCtx.createBufferSource();
   src.buffer = buf; src.connect(state.audioCtx.destination); src.start(0);
 }
-function tone(freq, dur, type="sine", delay=0, vol=0.08) {
+function tone(freq, dur, type="sine", delay=0, vol=0.4) {
   if (!state.audioCtx) return;
   const ctx = state.audioCtx;
   const o = ctx.createOscillator(), g = ctx.createGain();
