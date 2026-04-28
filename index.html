@@ -97,10 +97,13 @@
     @media(max-height:760px){.logo{font-size:42px;margin:2px 0 10px}.guide-image{height:128px}.summary-card input{font-size:26px}.start-btn{height:56px}.sound{padding:10px}.content{padding-top:14px}}
 
     /* ── Splash ── */
-    #splash{position:fixed;inset:0;z-index:9999;background:#07111f;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:opacity .8s ease}
+    #splash{position:fixed;inset:0;z-index:9999;background:#07111f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;pointer-events:none;transition:opacity .8s ease}
     #splash.hide{opacity:0}
-    .splash-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,14vw,72px);letter-spacing:.25em;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 24px rgba(0,217,183,.4));animation:splashUp .6s cubic-bezier(.22,.61,.36,1) both}
-    @keyframes splashUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .splash-icon{width:120px;height:120px;border-radius:26px;overflow:hidden;box-shadow:0 0 48px rgba(0,217,183,.35);animation:iconUp .8s cubic-bezier(.22,.61,.36,1) both}
+    .splash-icon img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes iconUp{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:translateY(0)}}
+    .splash-text{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:.35em;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 16px rgba(0,217,183,.35));animation:textFade .7s ease both;animation-delay:.4s}
+    @keyframes textFade{from{opacity:0}to{opacity:1}}
 
     /* ── App fade-in ── */
     .phone-shell{opacity:0;transition:opacity .8s ease}
@@ -108,7 +111,10 @@
   </style>
 </head>
 <body>
-<div id="splash"><div class="splash-logo">STRETCH</div></div>
+<div id="splash">
+  <div class="splash-icon"><img src="icon.png" alt="STRETCH"></div>
+  <div class="splash-text">STRETCH</div>
+</div>
 <div class="phone-shell">
   <main class="app">
     <div class="content">
