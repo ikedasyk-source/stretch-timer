@@ -42,7 +42,13 @@
         linear-gradient(145deg,#07111f 0%,#09182a 48%,#050b14 100%);
       overflow:hidden;
       touch-action:pan-y;
+      opacity:0;
+      animation:appFadeIn .42s ease-out forwards;
     }
+    @keyframes appFadeIn{from{opacity:0;filter:blur(6px);transform:scale(1.012)}to{opacity:1;filter:blur(0);transform:scale(1)}} opacity:0;
+      animation:appFadeIn .42s ease-out forwards;
+    }
+    @keyframes appFadeIn{from{opacity:0;filter:blur(6px);transform:scale(1.012)}to{opacity:1;filter:blur(0);transform:scale(1)}}
     body::before{
       content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;
       background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
@@ -55,15 +61,21 @@
     button:active{transform:scale(.98)}
     .hidden{display:none!important}
 
-    .phone-shell{
-      width:min(450px,100%);
+    .phon.app{
+      position:relative;
+      opacity:0;
+      transform:translateY(10px) scale(.992);
+      animation:appRiseIn .52s cubic-bezier(.2,.8,.2,1) .08s forwards;,100%);
       margin:0 auto;
       height:100vh;height:100svh;
       padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));
     }
     .app{
       position:relative;
-      height:calc(100vh - 24px);height:calc(100svh - 24px);
+      opacity:0;
+      transform:translateY(10px) scale(.992);
+      animation:appRiseIn .52s cubic-bezier(.2,.8,.2,1) .08@keyframes appRiseIn{from{opacity:0;transform:translateY(10px) scale(.992)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .app::after{      height:calc(100vh - 24px);height:calc(100svh - 24px);
       border:1px solid rgba(255,255,255,.11);
       border-radius:34px;
       background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
@@ -71,7 +83,8 @@
       overflow:hidden;
       backdrop-filter:blur(18px);
     }
-    .app::after{
+    @keyframes appRiseIn{from{opacity:0;transform:translateY(10px) scale(.992)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .app::after
       content:"";position:absolute;inset:0;pointer-events:none;
       background:linear-gradient(180deg,rgba(255,255,255,.07),transparent 14%,transparent 84%,rgba(255,255,255,.035));
     }
@@ -96,12 +109,12 @@
 
     #countdownScreen,#runScreen{align-items:center;justify-content:center;gap:12px;min-height:calc(100vh - 68px);min-height:calc(100svh - 68px);text-align:center}.screen-flex{display:flex;flex-direction:column}.cd-exercise,.run-exercise{font-size:11px;letter-spacing:.26em;color:var(--muted);font-weight:900;text-transform:uppercase;line-height:1.6}.cd-side,.run-side-label{font-size:13px;font-weight:900;letter-spacing:.18em;color:var(--hold);background:rgba(0,217,183,.1);border:1px solid rgba(0,217,183,.26);padding:5px 16px;border-radius:999px;min-height:30px}.cd-number{font-family:'Bebas Neue',sans-serif;font-size:clamp(110px,32vw,172px);color:var(--hold);line-height:1;animation:pop .42s ease-out}.cd-label,.phase-label{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.42em;color:var(--muted)}@keyframes pop{0%{transform:scale(1.35);opacity:0}100%{transform:scale(1);opacity:1}}
     .phase-label{font-size:24px;font-weight:900}.phase-label.hold{color:var(--hold);text-shadow:0 0 18px rgba(0,217,183,.45)}.phase-label.relax{color:var(--relax);text-shadow:0 0 18px rgba(121,184,255,.42)}.run-side-label{opacity:0;transition:.3s}.run-side-label.visible{opacity:1}.ring-wrap{position:relative;width:min(72vw,286px);aspect-ratio:1;display:grid;place-items:center}.ring-svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}.ring-track{fill:none;stroke:rgba(255,255,255,.065);stroke-width:12}.ring-prog{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .22s linear,stroke .3s,filter .3s}.time-big{position:absolute;font-family:'Bebas Neue',sans-serif;font-size:clamp(70px,18vw,104px);line-height:1}.time-big.hold{color:var(--hold)}.time-big.relax{color:var(--relax)}.blink{animation:blink .5s infinite}@keyframes blink{50%{opacity:.35}}.sets-row{display:flex;align-items:baseline;gap:5px}.sets-label{font-size:11px;letter-spacing:.36em;color:var(--muted);font-weight:900}.sets-count{font-family:'Bebas Neue',sans-serif;font-size:48px}.sets-total{color:var(--muted);font-size:15px}.toast{padding:11px 18px;border:1px solid rgba(255,255,255,.10);border-radius:14px;color:rgba(255,255,255,.72);font-size:12px;background:rgba(7,17,31,.72);opacity:0;transform:translateY(6px);transition:.2s;width:min(310px,86vw)}.toast.show{opacity:1;transform:translateY(0)}.run-controls{display:flex;gap:12px}.run-btn{height:52px;min-width:112px;padding:0 22px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.52);border-radius:16px;font-family:'Bebas Neue',sans-serif;font-size:16px;font-weight:900;letter-spacing:.22em}.run-btn.active-hold{color:var(--hold);border-color:rgba(0,217,183,.42)}.run-btn.active-relax{color:var(--relax);border-color:rgba(121,184,255,.42)}
-    .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}.complete-box{width:min(330px,88vw);border:1px solid rgba(0,217,183,.42);border-radius:26px;background:rgba(7,17,31,.97);padding:30px 20px 22px;text-align:center;box-shadow:0 0 54px rgba(0,217,183,.17)}.complete-box h2{font-family:'Bebas Neue',sans-serif;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:36px;letter-spacing:.2em;margin-bottom:10px}.complete-box p{color:var(--muted);line-height:1.8;margin-bottom:20px;font-size:14px;white-space:pre-line}.complete-box button{width:100%;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--hold),#0097a7);color:white;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.22em}
+    .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}.complete-box{width:min(330px,88vw);border:1px solid rgba(0,217,183,.42);border-radius:26px;background:rgba(7,17,31,.97);padding:30px 20px 22px;text-align:center;box-shadow:0 0 54px rgba(0,217,183,.17)}.complete-box h2{font-family:'Bebas Neue',sans-serif;background:linear-gradient(135deg,var(--hold),var(--relax));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:36px;letter-spacing:.2em;margin-bottom:10px}.complete-box p{color:var(--muted);line-height:1.8;margin-bottom:20px;fo<body>
+<script>document.documentElement.style.backgroundColor='#07111f';</script>e:14px;white-space:pre-line}.complete-box button{width:100%;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--hold),#0097a7);color:white;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.22em}
     @media(max-height:760px){.logo{font-size:42px;margin:2px 0 10px}.guide-image{height:128px}.summary-card input{font-size:26px}.start-btn{height:56px}.sound{padding:10px}.content{padding-top:14px}}
   </style>
 </head>
-<body>
-<div class="phone-shell">
+<<div class="phone-shell">
   <main class="app">
     <div class="content">
       <section id="settingsScreen">
