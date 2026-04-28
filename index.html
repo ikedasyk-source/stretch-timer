@@ -73,6 +73,7 @@
       background-clip: text;
       filter: drop-shadow(0 0 20px rgba(0,201,167,0.35));
       line-height: 1;
+      margin-top: 16px;
       margin-bottom: 16px;
     }
 
@@ -540,6 +541,15 @@
 // ── exercises ──
 // bilateral: true → 左右各holdSec秒で自動切替（合計holdSec×2）
 const exercises = {
+  "カスタム": {
+    image: "",
+    bilateral: false,
+    presets: {
+      easy:   { work: 20, rest: 10, sets: 1 },
+      normal: { work: 30, rest: 10, sets: 1 },
+      deep:   { work: 45, rest: 15, sets: 2 },
+    }
+  },
   "ニー・トゥ・チェスト＋スパイナルロッキング": {
     image: "kneestochest.png",
     bilateral: false,
@@ -592,7 +602,7 @@ const CIRCUM = 2 * Math.PI * 92;
 
 // ── State ──
 const state = {
-  exercise: "ニー・トゥ・チェスト＋スパイナルロッキング",
+  exercise: "カスタム",
   level: "normal",
   phase: "work",        // "work" | "rest"
   sidePhase: "left",    // "left" | "right"（bilateral用）
@@ -795,31 +805,31 @@ function startMeditationBGM() {
   bowlPulse();
 }
 
-// ヒーリング系高音シネBGM（RELAX用）: 倍音少なめ、透明感のある高音
+// ヒーリング系ドローンBGM（RELAX用）: HOLDより高音・軽め
 function startRiverBGM() {
   const ctx = getBgmCtx();
   if (!ctx) return;
   const master = ctx.createGain();
   master.gain.setValueAtTime(0.0001, ctx.currentTime);
-  master.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.8);
+  master.gain.linearRampToValueAtTime(0.07, ctx.currentTime + 0.8);
   master.connect(ctx.destination);
   BGM.gainNode = master;
   BGM.current = 'relax';
 
-  // 高音シネ: 528Hz（ヒーリング周波数）＋オクターブ上
-  const freqs = [528, 1056, 792];
-  const vols  = [0.5, 0.25, 0.15];
+  // HOLDより1オクターブ上の和音（220→440Hz帯）
+  const freqs = [220, 330, 440, 660];
+  const vols  = [0.3, 0.2, 0.35, 0.1];
   freqs.forEach((f, i) => {
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.type = 'sine';
     o.frequency.setValueAtTime(f, ctx.currentTime);
 
-    // 非常にゆっくりしたビブラート
+    // HOLDより少し速いビブラート（軽やかな印象）
     const lfo = ctx.createOscillator();
     const lfoG = ctx.createGain();
-    lfo.frequency.value = 0.05 + i * 0.02;
-    lfoG.gain.value = 0.3;
+    lfo.frequency.value = 0.12 + i * 0.04;
+    lfoG.gain.value = 0.4;
     lfo.connect(lfoG);
     lfoG.connect(o.frequency);
     lfo.start();
@@ -831,22 +841,22 @@ function startRiverBGM() {
     BGM.nodes.push(o);
   });
 
-  // 12秒周期の柔らかいパルス音
-  function healPulse() {
+  // 10秒周期の柔らかい高音パルス
+  function relaxPulse() {
     if (BGM.current !== 'relax') return;
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.type = 'sine';
-    o.frequency.value = 1320;
+    o.frequency.value = 528;
     g.gain.setValueAtTime(0.0001, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 0.3);
-    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3);
+    g.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.2);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.5);
     o.connect(g).connect(master);
     o.start();
-    o.stop(ctx.currentTime + 3.5);
-    setTimeout(healPulse, 12000);
+    o.stop(ctx.currentTime + 4);
+    setTimeout(relaxPulse, 10000);
   }
-  healPulse();
+  relaxPulse();
 }
 
 function startBGM(phase) {
