@@ -246,6 +246,42 @@
       padding-top: 16px; padding-bottom: 4px;
     }
 
+    /* ── COUNTDOWN SCREEN ── */
+    #countdownScreen {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh; min-height: 100svh;
+      gap: 12px;
+    }
+    .cd-exercise {
+      font-size: 11px; letter-spacing: .3em;
+      color: var(--muted); text-transform: uppercase; font-weight: 700;
+    }
+    .cd-side {
+      font-size: 13px; font-weight: 700; letter-spacing: .2em;
+      color: var(--hold);
+      background: rgba(0,201,167,0.1);
+      border: 1px solid rgba(0,201,167,0.25);
+      padding: 4px 16px; border-radius: 20px;
+      min-height: 28px;
+    }
+    .cd-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(100px, 30vw, 160px);
+      color: var(--hold);
+      line-height: 1;
+      animation: cdPop .4s ease-out;
+    }
+    @keyframes cdPop {
+      0%   { transform: scale(1.4); opacity: 0; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .cd-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: .4em;
+      color: var(--muted);
+    }
+
     /* ======= TIMER SCREEN ======= */
     #runScreen {
       display: flex; flex-direction: column;
@@ -486,6 +522,14 @@
     </div>
 
     <div class="footer">actcreation-lab.com</div>
+  </section>
+
+  <!-- ===== COUNTDOWN ===== -->
+  <section id="countdownScreen" class="hidden">
+    <div class="cd-exercise" id="cdExercise"></div>
+    <div class="cd-side" id="cdSide"></div>
+    <div class="cd-number" id="cdNumber">3</div>
+    <div class="cd-label">GET READY</div>
   </section>
 
   <!-- ===== TIMER ===== -->
@@ -899,6 +943,39 @@ $("imageModal").addEventListener("click", e => {
   if (e.target.id === "imageModal") $("imageModal").classList.remove("show");
 });
 
+// ── Countdown ──
+function startCountdown(label, cb) {
+  let count = 3;
+  $("cdExercise").textContent = state.exercise;
+  $("cdSide").textContent = label || "";
+  $("cdSide").style.display = label ? "block" : "none";
+  $("cdNumber").textContent = count;
+
+  $("settingsScreen").classList.add("hidden");
+  $("runScreen").classList.add("hidden");
+  $("countdownScreen").classList.remove("hidden");
+
+  // アニメーションリセット用
+  function setCount(n) {
+    const el = $("cdNumber");
+    el.style.animation = "none";
+    el.offsetHeight; // reflow
+    el.style.animation = "cdPop .4s ease-out";
+    el.textContent = n;
+  }
+
+  const cd = setInterval(() => {
+    count--;
+    if (count > 0) {
+      setCount(count);
+    } else {
+      clearInterval(cd);
+      $("countdownScreen").classList.add("hidden");
+      cb();
+    }
+  }, 1000);
+}
+
 // ── Start ──
 $("startBtn").addEventListener("click", () => {
   unlockAudio();
@@ -914,12 +991,15 @@ $("startBtn").addEventListener("click", () => {
   state.remaining  = state.workSec;
 
   $("settingsScreen").classList.add("hidden");
-  $("runScreen").classList.remove("hidden");
-  $("runExercise").textContent = state.exercise;
-  $("setsTotal").textContent = " / " + state.totalSets;
-  updateRunView();
-  startTick();
-  startBGM('hold');
+
+  startCountdown(null, () => {
+    $("runScreen").classList.remove("hidden");
+    $("runExercise").textContent = state.exercise;
+    $("setsTotal").textContent = " / " + state.totalSets;
+    updateRunView();
+    startTick();
+    startBGM('hold');
+  });
 });
 
 // ── Timer ──
@@ -939,13 +1019,19 @@ function tick() {
 
 function nextPhase() {
   if (state.phase === "work") {
-    // bilateral: 左が終わったら右へ
+    // bilateral: 左が終わったら右へカウントダウン
     if (state.isBilateral && !state.inRightSide) {
       playSound($("sndWork").value);
+      clearInterval(state.timer); state.timer = null; state.running = false;
       state.inRightSide = true;
       state.duration  = state.workSec;
       state.remaining = state.workSec;
-      updateRunView();
+      $("runScreen").classList.add("hidden");
+      startCountdown("右側へ切り替え", () => {
+        $("runScreen").classList.remove("hidden");
+        updateRunView();
+        startTick();
+      });
       return;
     }
     // work終了 → restへ（最終セットなら完了）
