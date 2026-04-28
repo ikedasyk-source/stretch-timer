@@ -1,10 +1,10 @@
-# STRETCH TIMER
+STRETCH TIMER GitHub Pages用ファイル
 
-GitHub Pages用ファイルです。
-
-## アップロードするもの
+アップロードするもの:
 - index.html
 - manifest.json
+
+既に配置済みの画像ファイル:
 - icon.png
 - kneestochest.png
 - catcowstretch.png
@@ -12,4 +12,8 @@ GitHub Pages用ファイルです。
 - frontplank.png
 - chestopenerstrech.png
 
-画像ファイルは index.html と同じ階層に置いてください。
+今回の更新:
+- 起動時にSTRETCHロゴをふわっと表示
+- 1.8秒表示
+- 0.8秒でスプラッシュをフェードアウト
+- 同時にアプリホーム画面を0.8秒でフェードイン
