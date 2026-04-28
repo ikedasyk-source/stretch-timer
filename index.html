@@ -168,15 +168,64 @@ $('exerciseSelect').addEventListener('change',e=>{state.exercise=e.target.value;
 function initAudio(){if(!state.audioCtx)state.audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(state.audioCtx.state==='suspended')state.audioCtx.resume()}
 function tone(freq,dur,type='sine',delay=0,vol=.3){if(!state.audioCtx)return;const ctx=state.audioCtx,o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,ctx.currentTime+delay);g.gain.setValueAtTime(.0001,ctx.currentTime+delay);g.gain.exponentialRampToValueAtTime(vol,ctx.currentTime+delay+.015);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+delay+dur);o.connect(g).connect(ctx.destination);o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+dur+.02)}
 function playSound(name){if(name==='none')return;initAudio();if(navigator.vibrate)navigator.vibrate(55);if(name==='beep'){tone(880,.15);tone(880,.15,'sine',.2)}if(name==='bell'){tone(660,.18);tone(990,.22,'sine',.18)}if(name==='blip'){tone(520,.08,'square');tone(740,.08,'square',.1)}if(name==='fanfare'){tone(523,.14);tone(659,.14,'sine',.16);tone(784,.28,'sine',.32)}}
+
+// ── BGM ──
+const BGM={gain:null,nodes:[],current:null,pulseTimer:null};
+function stopBGM(){
+  if(BGM.pulseTimer){clearTimeout(BGM.pulseTimer);BGM.pulseTimer=null}
+  if(BGM.gain&&state.audioCtx){
+    const ctx=state.audioCtx,now=ctx.currentTime;
+    BGM.gain.gain.cancelScheduledValues(now);
+    BGM.gain.gain.setValueAtTime(Math.max(BGM.gain.gain.value,.0001),now);
+    BGM.gain.gain.linearRampToValueAtTime(.0001,now+.45);
+  }
+  BGM.nodes.forEach(n=>{try{n.stop(state.audioCtx.currentTime+.5)}catch(e){}});
+  BGM.nodes=[];BGM.gain=null;BGM.current=null;
+}
+function startBGM(mode){
+  if(!$('bgmToggle').checked)return;
+  initAudio();
+  if(BGM.current===mode)return;
+  stopBGM();
+  const ctx=state.audioCtx,master=ctx.createGain();
+  master.gain.setValueAtTime(.0001,ctx.currentTime);
+  master.gain.linearRampToValueAtTime(mode==='hold'?.10:.065,ctx.currentTime+.7);
+  master.connect(ctx.destination);
+  BGM.gain=master;BGM.current=mode;
+  const freqs=mode==='hold'?[110,165,220,330]:[220,330,440,660];
+  freqs.forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain(),lfo=ctx.createOscillator(),lfoG=ctx.createGain();
+    o.type='sine';o.frequency.value=f;
+    lfo.frequency.value=(mode==='hold'?.08:.12)+i*.035;
+    lfoG.gain.value=mode==='hold'?.45:.34;
+    lfo.connect(lfoG).connect(o.frequency);
+    g.gain.value=[.34,.20,.24,.11][i];
+    o.connect(g).connect(master);
+    lfo.start();o.start();
+    BGM.nodes.push(lfo,o);
+  });
+  function pulse(){
+    if(BGM.current!==mode||!BGM.gain)return;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type='sine';o.frequency.value=mode==='hold'?432:528;
+    g.gain.setValueAtTime(.0001,ctx.currentTime);
+    g.gain.linearRampToValueAtTime(mode==='hold'?.055:.04,ctx.currentTime+.16);
+    g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+(mode==='hold'?3.7:3.0));
+    o.connect(g).connect(master);o.start();o.stop(ctx.currentTime+4);
+    BGM.pulseTimer=setTimeout(pulse,mode==='hold'?8000:10000);
+  }
+  pulse();
+}
+$('bgmToggle').addEventListener('change',()=>{if(!$('bgmToggle').checked)stopBGM();else if(state.running)startBGM(state.phase==='work'?'hold':'relax')});
 ['sndWork','sndRest','sndDone'].forEach(id=>$(id).addEventListener('change',e=>playSound(e.target.value)));
 function startCountdown(label,cb){let count=3;$('cdExercise').textContent=state.exercise;$('cdSide').textContent=label||'';$('cdSide').style.visibility=label?'visible':'hidden';$('cdNumber').textContent=count;$('settingsScreen').classList.add('hidden');$('runScreen').classList.add('hidden');$('countdownScreen').classList.remove('hidden');const cd=setInterval(()=>{count--;if(count>0){const el=$('cdNumber');el.style.animation='none';el.offsetHeight;el.style.animation='pop .42s ease-out';el.textContent=count}else{clearInterval(cd);$('countdownScreen').classList.add('hidden');cb()}},1000)}
-$('startBtn').addEventListener('click',()=>{initAudio();state.exercise=$('exerciseSelect').value;state.workSec=Math.max(1,parseInt($('inpWork').value)||30);state.restSec=Math.max(1,parseInt($('inpRest').value)||10);state.totalSets=Math.max(1,parseInt($('inpSets').value)||1);state.isBilateral=exercises[state.exercise].bilateral;state.currentSet=1;state.phase='work';state.inRightSide=false;state.duration=state.workSec;state.remaining=state.workSec;startCountdown(null,()=>{$('runScreen').classList.remove('hidden');$('runExercise').textContent=state.exercise;$('setsTotal').textContent='/ '+state.totalSets;updateRunView();startTick()})});
+$('startBtn').addEventListener('click',()=>{initAudio();state.exercise=$('exerciseSelect').value;state.workSec=Math.max(1,parseInt($('inpWork').value)||30);state.restSec=Math.max(1,parseInt($('inpRest').value)||10);state.totalSets=Math.max(1,parseInt($('inpSets').value)||1);state.isBilateral=exercises[state.exercise].bilateral;state.currentSet=1;state.phase='work';state.inRightSide=false;state.duration=state.workSec;state.remaining=state.workSec;startCountdown(null,()=>{$('runScreen').classList.remove('hidden');$('runExercise').textContent=state.exercise;$('setsTotal').textContent='/ '+state.totalSets;updateRunView();startTick();startBGM('hold')})});
 function startTick(){if(state.running)return;state.running=true;state.timer=setInterval(tick,1000)}
 function tick(){if(state.remaining>0){state.remaining--;updateRunView();if(state.remaining===0)nextPhase()}}
-function nextPhase(){if(state.phase==='work'){if(state.isBilateral&&!state.inRightSide){playSound($('sndWork').value);clearInterval(state.timer);state.timer=null;state.running=false;state.inRightSide=true;state.duration=state.workSec;state.remaining=state.workSec;$('runScreen').classList.add('hidden');startCountdown('右側へ切り替え',()=>{$('runScreen').classList.remove('hidden');updateRunView();startTick()});return}if(state.currentSet>=state.totalSets){finishAll();return}playSound($('sndWork').value);state.phase='rest';state.inRightSide=false;state.duration=state.restSec;state.remaining=state.restSec}else{playSound($('sndRest').value);state.currentSet++;state.phase='work';state.inRightSide=false;state.duration=state.workSec;state.remaining=state.workSec}updateRunView()}
-function finishAll(){clearInterval(state.timer);state.timer=null;state.running=false;playSound($('sndDone').value);$('completeMsg').textContent=state.exercise+'\n全'+state.totalSets+'セット完了！\nお疲れさまでした。';$('completeModal').classList.add('show')}
-function togglePause(){if(state.running){clearInterval(state.timer);state.timer=null;state.running=false;$('pauseBtn').textContent='RESUME';$('pauseBtn').className='run-btn'}else{startTick();$('pauseBtn').textContent='PAUSE';$('pauseBtn').className='run-btn active-'+(state.phase==='work'?'hold':'relax')}}
-function stopTimer(){clearInterval(state.timer);state.timer=null;state.running=false;$('runScreen').classList.add('hidden');$('settingsScreen').classList.remove('hidden');updateSettingsView()}
+function nextPhase(){if(state.phase==='work'){if(state.isBilateral&&!state.inRightSide){playSound($('sndWork').value);clearInterval(state.timer);state.timer=null;state.running=false;state.inRightSide=true;state.duration=state.workSec;state.remaining=state.workSec;$('runScreen').classList.add('hidden');startCountdown('右側へ切り替え',()=>{$('runScreen').classList.remove('hidden');updateRunView();startTick()});return}if(state.currentSet>=state.totalSets){finishAll();return}playSound($('sndWork').value);state.phase='rest';state.inRightSide=false;state.duration=state.restSec;state.remaining=state.restSec;startBGM('relax')}else{playSound($('sndRest').value);state.currentSet++;state.phase='work';state.inRightSide=false;state.duration=state.workSec;state.remaining=state.workSec;startBGM('hold')}updateRunView()}
+function finishAll(){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();playSound($('sndDone').value);$('completeMsg').textContent=state.exercise+'\n全'+state.totalSets+'セット完了！\nお疲れさまでした。';$('completeModal').classList.add('show')}
+function togglePause(){if(state.running){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();$('pauseBtn').textContent='RESUME';$('pauseBtn').className='run-btn'}else{startTick();startBGM(state.phase==='work'?'hold':'relax');$('pauseBtn').textContent='PAUSE';$('pauseBtn').className='run-btn active-'+(state.phase==='work'?'hold':'relax')}}
+function stopTimer(){clearInterval(state.timer);state.timer=null;state.running=false;stopBGM();$('runScreen').classList.add('hidden');$('settingsScreen').classList.remove('hidden');updateSettingsView()}
 $('pauseBtn').addEventListener('click',togglePause);$('stopBtn').addEventListener('click',stopTimer);$('completeOk').addEventListener('click',()=>{$('completeModal').classList.remove('show');$('runScreen').classList.add('hidden');$('settingsScreen').classList.remove('hidden');updateSettingsView()});
 const ringProg=$('ringProg');ringProg.style.strokeDasharray=CIRCUM;
 function updateRunView(){const isWork=state.phase==='work',ratio=state.duration?state.remaining/state.duration:0,phaseClass=isWork?'hold':'relax';ringProg.style.strokeDashoffset=CIRCUM*(1-ratio);ringProg.style.stroke=isWork?'var(--hold)':'var(--relax)';ringProg.style.filter=isWork?'drop-shadow(0 0 10px rgba(0,217,183,.62))':'drop-shadow(0 0 10px rgba(121,184,255,.55))';const timeEl=$('timeBig');timeEl.textContent=state.remaining;timeEl.className='time-big '+phaseClass+(state.remaining<=3&&state.remaining>0?' blink':'');const label=$('phaseLabel');if(isWork){label.textContent=state.isBilateral?(state.inRightSide?'RIGHT':'LEFT'):'HOLD';label.className='phase-label hold'}else{label.textContent='RELAX';label.className='phase-label relax'}const side=$('runSideLabel');if(isWork&&state.isBilateral){side.textContent=state.inRightSide?'右側':'左側';side.classList.add('visible')}else{side.classList.remove('visible')}$('setsCount').textContent=state.currentSet;if(state.running)$('pauseBtn').className='run-btn active-'+phaseClass;$('toast').classList.toggle('show',state.remaining<=3&&state.remaining>0)}
